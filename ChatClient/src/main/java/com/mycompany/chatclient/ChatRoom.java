@@ -4,7 +4,9 @@
  */
 package com.mycompany.chatclient;
 
+import static com.mycompany.chatclient.ChatScreen.txt_roomName;
 import game.Message;
+import java.util.ArrayList;
 
 /**
  *
@@ -12,14 +14,44 @@ import game.Message;
  */
 public class ChatRoom extends javax.swing.JFrame {
 
+//    public static ArrayList<String> participates = new ArrayList<>();
+    public static String roomName;
+    public static ArrayList<String> participants;
+
     /**
      * Creates new form ChatRoom
      */
-    public ChatRoom() {
+    public ChatRoom(String roomName, ArrayList<String> participants) {
+        this.roomName = roomName;
+        this.participants = participants;
         initComponents();
-        lbl_chat.setText(Client.name + " and " + Client.pairedClient + "'s Chat Room ");
+        initializeRoom();
     }
 
+    private void initializeRoom() {
+        lbl_chat.setText(roomName);
+
+        StringBuilder participantsText = new StringBuilder();
+        for (String participant : participants) {
+            participantsText.append(participant).append(" && ");
+        }
+        participantsText.delete(participantsText.length() - 4, participantsText.length());
+        lbl_participants.setText(participantsText.toString());
+    }
+
+//    public ChatRoom() {
+//        initComponents();
+//        System.out.println(Client.roomName);
+//        if (Client.roomName == null) {
+//            lbl_chat.setText(ChatScreen.txt_roomName.getText());
+//        } else {
+//            lbl_chat.setText(Client.roomName);
+//        }
+//
+//        lbl_participants.setText(Client.name + " && " + Client.pairedClient);
+//        participates.add(Client.name);
+//        participates.add(Client.pairedClient);
+//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -37,6 +69,8 @@ public class ChatRoom extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         txta_rcvd = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        lbl_participants = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -64,6 +98,8 @@ public class ChatRoom extends javax.swing.JFrame {
 
         jLabel2.setText("Received Message:");
 
+        jLabel1.setText("Participants");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -76,14 +112,22 @@ public class ChatRoom extends javax.swing.JFrame {
                             .addComponent(btn_sendMessage)
                             .addComponent(jLabel2)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addComponent(lbl_chat, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(58, 58, 58)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(lbl_chat, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(57, Short.MAX_VALUE))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(59, 59, 59)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 42, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lbl_participants, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -91,7 +135,12 @@ public class ChatRoom extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(lbl_chat, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(49, 49, 49)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbl_participants, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addComponent(btn_sendMessage)
                 .addGap(18, 18, 18)
@@ -101,7 +150,7 @@ public class ChatRoom extends javax.swing.JFrame {
                 .addGap(54, 54, 54))
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 0, -1, 514));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-30, 0, -1, 514));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -109,10 +158,10 @@ public class ChatRoom extends javax.swing.JFrame {
     private void btn_sendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendMessageActionPerformed
 
         Message textMessage = (Message) new Message(Message.Message_Type.Text);
-        textMessage.content = Client.name+": "+txta_send.getText();
+        textMessage.content = Client.name + ": " + txta_send.getText();
         txta_send.setText("");
         Client.Send(textMessage);
-        
+
 
     }//GEN-LAST:event_btn_sendMessageActionPerformed
 
@@ -146,18 +195,20 @@ public class ChatRoom extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ChatRoom().setVisible(true);
+                new ChatRoom(roomName, participants).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_sendMessage;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lbl_chat;
+    public static javax.swing.JLabel lbl_participants;
     public static javax.swing.JTextArea txta_rcvd;
     private javax.swing.JTextArea txta_send;
     // End of variables declaration//GEN-END:variables

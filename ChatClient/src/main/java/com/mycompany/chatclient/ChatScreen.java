@@ -5,7 +5,12 @@
 package com.mycompany.chatclient;
 
 import game.Message;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 
 /**
  *
@@ -13,6 +18,7 @@ import javax.swing.DefaultListModel;
  */
 public class ChatScreen extends javax.swing.JFrame {
 
+    public static int y = 0;
     public static String username;
     public static DefaultListModel<String> listModel = new DefaultListModel<>();
 
@@ -43,6 +49,9 @@ public class ChatScreen extends javax.swing.JFrame {
         lst_ConnectedClients = new javax.swing.JList<>();
         jLabel3 = new javax.swing.JLabel();
         btn_chatRoom = new javax.swing.JButton();
+        btn_privateChatRoom = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        txt_roomName = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(155, 132, 178));
@@ -94,9 +103,30 @@ public class ChatScreen extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btn_chatRoom);
-        btn_chatRoom.setBounds(30, 460, 170, 23);
+        btn_chatRoom.setBounds(30, 520, 170, 23);
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 647, 592));
+        btn_privateChatRoom.setText("Make Private Chat Room");
+        btn_privateChatRoom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_privateChatRoomActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btn_privateChatRoom);
+        btn_privateChatRoom.setBounds(30, 490, 190, 23);
+
+        jLabel4.setText("Room Name:");
+        jPanel1.add(jLabel4);
+        jLabel4.setBounds(30, 460, 76, 17);
+
+        txt_roomName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_roomNameActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txt_roomName);
+        txt_roomName.setBounds(110, 460, 110, 23);
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 650, 592));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -110,14 +140,42 @@ public class ChatScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_connectActionPerformed
 
     private void btn_chatRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_chatRoomActionPerformed
+
+    }//GEN-LAST:event_btn_chatRoomActionPerformed
+
+    private void btn_privateChatRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_privateChatRoomActionPerformed
+
         Client.pairedClient = lst_ConnectedClients.getSelectedValue();
         Message paired = (Message) new Message(Message.Message_Type.Pair);
         paired.content = Client.pairedClient;
         Client.Send(paired);
-        Client.chatRoom = new ChatRoom();
-        Client.chatRoom.setVisible(true);
-        
-    }//GEN-LAST:event_btn_chatRoomActionPerformed
+        JButton chatRoom = new JButton();
+        chatRoom.setBackground(Color.pink);
+        jPanel1.add(chatRoom);
+        y += 50;
+        chatRoom.setBounds(400, y, 150, 40);
+        chatRoom.setText(txt_roomName.getText());
+        Message makeRoom = (Message) new Message(Message.Message_Type.Room);
+        makeRoom.content = Client.pairedClient + " " + txt_roomName.getText();
+        Client.Send(makeRoom);
+        String pairedCL = Client.pairedClient;
+        chatRoom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<String> participant = new ArrayList<>();
+                participant.add(Client.name);
+                participant.add(pairedCL);
+                ChatRoom CR= new ChatRoom(txt_roomName.getText(), participant);
+                CR.setVisible(true);
+            }
+        });
+
+
+    }//GEN-LAST:event_btn_privateChatRoomActionPerformed
+
+    private void txt_roomNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_roomNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_roomNameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -157,12 +215,15 @@ public class ChatScreen extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_chatRoom;
     private javax.swing.JButton btn_connect;
+    private javax.swing.JButton btn_privateChatRoom;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel4;
+    public static javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane3;
     public javax.swing.JList<String> lst_ConnectedClients;
+    public static javax.swing.JTextField txt_roomName;
     public static javax.swing.JTextField txt_username;
     // End of variables declaration//GEN-END:variables
 }

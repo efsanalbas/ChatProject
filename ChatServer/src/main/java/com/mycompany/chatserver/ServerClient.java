@@ -5,7 +5,8 @@
 package com.mycompany.chatserver;
 
 import game.Message;
-import static game.Message.Message_Type.ConnectedClients;
+import static game.Message.Message_Type.Pair;
+import static game.Message.Message_Type.Room;
 import static game.Message.Message_Type.Text;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,9 +22,10 @@ public class ServerClient extends Thread {
     ObjectOutputStream output; //Client verilerini okuyabilmek için tanımlandı.
     ObjectInputStream input;  //Clienta mesaj gönderebilmek için tanımlandı.
     boolean isListening;     //Dinleme kontrolü için tanımlandı.
-    public ServerClient pairedClient;
+    public ArrayList<ServerClient> pairedClients = new ArrayList<>();
     public String clientName;
     public static ArrayList<String> clientList = new ArrayList<>();
+    public ServerClient pairedCurrent;
 
     public ServerClient(Socket soket) throws IOException { //Clientın mesajlarını serverda karşılamak için ServerClient objesi oluşturmam gerekiyordu ve burada constructor oluşturdum.
         this.socket = soket;
@@ -87,19 +89,40 @@ public class ServerClient extends Thread {
                     case Pair:
                         for (int i = 0; i < Server.clients.size(); i++) {
                             if (Server.clients.get(i).clientName.equals(received.content.toString())) {
-                                this.pairedClient = Server.clients.get(i);
-                                Server.clients.get(i).pairedClient = this;
+                                this.pairedClients.add(Server.clients.get(i));
+                                // this.pairedCurrent = Server.clients.get(i);
+                                Server.clients.get(i).pairedClients.add(this);
+                                // Server.clients.get(i).pairedCurrent = this;
+
                             }
                         }
+                        for (ServerClient pairedClient : this.pairedClients) {
+                            if (pairedClient != null && pairedClient.clientName.equals(received.content.toString())) {
+                                System.out.println("BURAYA GİRDİ.");
+                                pairedClient.SendMessage(Pair, this.clientName);
+                            }
+                        }
+
                         break;
-                        
+                    case Room:
+                        String[] makeRoom = received.content.toString().split(" ");
+                        for (ServerClient pairedClient : this.pairedClients) {
+                            if (pairedClient != null && pairedClient.clientName.equals(makeRoom[0])) {
+                                pairedClient.SendMessage(Room, makeRoom[1]);
+                            }
+                        }
+
+                        break;
                     case Text:
                         String receivedMessage = received.content.toString();
-                        this.SendMessage(Text, receivedMessage);
-                        this.pairedClient.SendMessage(Text, receivedMessage);
+                        for (ServerClient pairedClient : this.pairedClients) {
+                             if (pairedClient != null ) {
+                            this.SendMessage(Text, receivedMessage);
+                            pairedClient.SendMessage(Text, receivedMessage);
+                             }
+                        }
                         break;
                 }
-
             } catch (IOException ex) {
                 System.out.println("Error: Message couldn't get.");//Mesaj alınamadığında client oyundan çıkmıştır.
                 this.Stop(); //Bu durumda socket kapatılır ve dinlemeyi bırakır.

@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 
 public class Message implements java.io.Serializable {
-    public static enum Message_Type {Name,ConnectedClients,Room,Pair,Text,File}
+    public static enum Message_Type {Name,ConnectedClients,CreateRoom,AddParticipant,Room,Pair,Text,File}
     
     public Message_Type type;
     public Object content;

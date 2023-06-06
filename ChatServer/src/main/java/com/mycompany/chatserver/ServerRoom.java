@@ -13,9 +13,9 @@ import java.util.ArrayList;
 public class ServerRoom {
 
     public String roomName;
-    public ArrayList<String> participants;
+    public ArrayList<ServerClient> participants;
 
-    public ServerRoom(String roomName, ArrayList<String> participants) {
+    public ServerRoom(String roomName, ArrayList<ServerClient> participants) {
         this.roomName = roomName;
         this.participants = participants;
     }

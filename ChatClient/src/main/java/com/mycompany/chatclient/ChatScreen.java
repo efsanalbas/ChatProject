@@ -126,41 +126,18 @@ public class ChatScreen extends javax.swing.JFrame {
 
     private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
         username = txt_username.getText();
-        Client.Start("localhost", 3000);
+        Client.Start("localhost", 3001);
     }//GEN-LAST:event_btn_connectActionPerformed
 
     private void btn_privateChatRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_privateChatRoomActionPerformed
 
-        Client.pairedClient = lst_ConnectedClients.getSelectedValue();
-        Message paired = (Message) new Message(Message.Message_Type.Pair);
-        paired.content = Client.pairedClient;
-        Client.Send(paired);
-        JButton chatRoom = new JButton();
-        chatRoom.setBackground(Color.pink);
-        jPanel1.add(chatRoom);
-        y += 50;
-        chatRoom.setBounds(400, y, 150, 40);
-        chatRoom.setText(txt_roomName.getText());
-        Message makeRoom = (Message) new Message(Message.Message_Type.Room);
-        makeRoom.content = Client.pairedClient + " " + txt_roomName.getText();
-        Client.Send(makeRoom);
-        String pairedCL = Client.pairedClient;
+        String selectedUser = lst_ConnectedClients.getSelectedValue();
         String roomName = txt_roomName.getText();
         String clientName = Client.name;
-        Message createRoom = new Message(Message.Message_Type.CreateRoom);
-        createRoom.content = roomName + " " + pairedCL + " " + clientName;
-        Client.Send(createRoom);
-        chatRoom.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ArrayList<String> participant = new ArrayList<>();
-                participant.add(Client.name);
-                participant.add(pairedCL);
-                ChatRoom CR = new ChatRoom(roomName, participant);
-                CR.setVisible(true);
-            }
-        });
-
+        Message makeRoom = (Message) new Message(Message.Message_Type.CreateRoom);
+        makeRoom.content = roomName + " " + clientName + " " + selectedUser;
+        Client.Send(makeRoom);
+ 
 
     }//GEN-LAST:event_btn_privateChatRoomActionPerformed
 

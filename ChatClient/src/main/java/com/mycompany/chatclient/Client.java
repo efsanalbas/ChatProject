@@ -4,6 +4,7 @@ import static com.mycompany.chatclient.ChatScreen.txt_roomName;
 import static com.mycompany.chatclient.ChatScreen.y;
 import game.Message;
 import static game.Message.Message_Type.Name;
+import static game.Message.Message_Type.ParticipantAdded;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -45,69 +47,28 @@ class Listen extends Thread {
                         }
                         break;
 
-                    case Pair:
-                        if (received.content.toString() != null) {
-                            System.out.println(received.content.toString());
-                            Client.pairedClient = received.content.toString();
-                            Client.pairedClients.add(Client.pairedClient);
-                        }
-
+                    case CreateRoom:
+                        String roomInfo = received.content.toString();
+                        ClientRoom cr = new ClientRoom(roomInfo);
+                        Client.rooms.add(cr);
+                        Client.addRoomButton(cr);
                         break;
-                    case Room:
-                        Client.makeRoom = true;
-                        System.out.println(Client.makeRoom);
-                        if (Client.makeRoom) {
 
-                            JButton chatRoom = new JButton();
-                            chatRoom.setBackground(Color.pink);
-                            ChatScreen.jPanel1.add(chatRoom);
-                            y += 50;
-                            chatRoom.setBounds(400, y, 150, 40);
-                            chatRoom.setText(received.content.toString());
-                            String roomName = received.content.toString();
-                            // Client.roomName = roomName;
-                            String pairedCL = Client.pairedClient;
-                            String clientName = Client.name;
-                            Message createRoom = new Message(Message.Message_Type.CreateRoom);
-                            createRoom.content = roomName + " " + pairedCL + " " + clientName;
-                            Client.Send(createRoom);
-                            chatRoom.addActionListener(new ActionListener() {
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                    ArrayList<String> participant = new ArrayList<>();
-                                    participant.add(Client.name);
-                                    participant.add(pairedCL);
-                                    ChatRoom CR = new ChatRoom(roomName, participant);
-                                    CR.setVisible(true);
-                                }
-                            });
+                    case ParticipantAdded:
+                        String roomInformation = received.content.toString();
+                        String[] participantInfo = received.content.toString().split(" ");
+                        if (Client.name.equals(participantInfo[1])) {
+                            ClientRoom addedClient = new ClientRoom(roomInformation);
+                            Client.rooms.add(addedClient);
+                            Client.addRoomButton(addedClient);
+                            break;
                         }
-                        Client.makeRoom = false;
-                        System.out.println("Client:" + Client.makeRoom);
                     case File:
-                        if (received.content instanceof FileInfo) {
-                            FileInfo fileInfo = (FileInfo) received.content;
-                            String roomName = fileInfo.roomName;
-                            String fileName = fileInfo.fileName;
-                            byte[] fileBytes = fileInfo.fileBytes;
-
-                            // Dosyayı diskte kaydet
-                            File file = new File(fileName);
-                            try (FileOutputStream fos = new FileOutputStream(file)) {
-                                fos.write(fileBytes);
-                            } catch (IOException ex) {
-                                Logger.getLogger(Listen.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-
-                            // Dosyanın adını ve içeriğini göster
-                            ChatRoom.txta_rcvd.append("Received file: " + fileName + "\n");
-                            // İsteğe bağlı olarak, dosyanın açılması veya görüntülenmesi için uygun bir işlem yapabilirsiniz
-                        } else {
-                            System.out.println("Received message content is not of type FileInfo.");
-                        }
+                        String fileMessage = received.content.toString();
+                        Client.cr.txta_rcvd.append(fileMessage + "\n");
                         break;
                     case Text:
-                        ChatRoom.txta_rcvd.append(received.content.toString() + "\n");//Eşleştiği clientın servera gönderdiği mesajı serverdan aldı.
+                        Client.cr.txta_rcvd.append(received.content.toString() + "\n");
                         break;
                 }
             } catch (IOException ex) {
@@ -129,15 +90,11 @@ public class Client {
     public static ObjectInputStream input;  //verileri göndermek için gerekli nesne
     public static ObjectOutputStream output; //serverı dinleme thredi 
     public static Listen listenMe;
-    public static String pairedClient;
     public static String selectedClient;
-    public static ArrayList<String> pairedClients = new ArrayList<>();
     public static ArrayList<String> participants = new ArrayList<>();
-    public static String pair;
     public static String name;//Client name
-    // public static ChatRoom chatRoom;
-    public static String roomName;
-    public static boolean makeRoom;
+    public static ArrayList<ClientRoom> rooms = new ArrayList<>();
+    public static ChatRoom cr;
 
     public static void Start(String ip, int port) {
         try {
@@ -172,5 +129,23 @@ public class Client {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    public static void addRoomButton(ClientRoom room) {
+        JButton chatRoom = new JButton();
+        chatRoom.setBackground(Color.pink);
+        ChatScreen.jPanel1.add(chatRoom);
+        y += 50;
+        chatRoom.setBounds(400, y, 150, 40);
+        chatRoom.setText(room.roomName);
+
+        chatRoom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                cr = new ChatRoom(room.roomName, room.participants);
+                cr.setVisible(true);
+            }
+        });
+
+    }
 }

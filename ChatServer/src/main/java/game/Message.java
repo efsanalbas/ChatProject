@@ -13,11 +13,12 @@ import java.util.ArrayList;
  */
 public class Message implements java.io.Serializable {
         //mesaj tipleri enum 
-    public static enum Message_Type {Name,ConnectedClients,CreateRoom,AddParticipant,Room,Pair,Text,File}
+    public static enum Message_Type {Name,ConnectedClients,ParticipantAdded,CreateRoom,AddParticipant,SendRooms,Text,File}
     //mesajın tipi
     public Message_Type type;
     //mesajın içeriği obje tipinde ki istenilen tip içerik yüklenebilsin
     public Object content;
+    
     public ArrayList <String> userList= new ArrayList<>();
     public Message(Message_Type t)
     {

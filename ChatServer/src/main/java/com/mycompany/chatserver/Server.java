@@ -23,7 +23,10 @@ public class Server extends Thread {
     int port; //port numarasını tanımladım.
     boolean isListening; //dinleme durumunu tutması için tanımladım.
     public static ArrayList<ServerClient> clients; //bağlanan clientları bu arraylistte tuttum.
-    public static ArrayList<String> clientList= new ArrayList<>();;
+    public static ArrayList<String> clientList = new ArrayList<>(); //bağlanan clientları bu arraylistte tuttum.
+    public static ArrayList<ServerRoom> rooms = new ArrayList<>();
+
+
 
     public Server(int port) { //Server oluşturmak için constructor tanımladım.
         try {
@@ -56,12 +59,12 @@ public class Server extends Thread {
 
     }
 
-public static void SendBroadcast() {
-    ArrayList<String> connectedUsers = new ArrayList<>(clientList);
-    for (ServerClient client : clients) {
-        client.SendMessage(Message.Message_Type.ConnectedClients, connectedUsers);
+    public static void SendBroadcast() {
+        ArrayList<String> connectedUsers = new ArrayList<>(clientList);
+        for (ServerClient client : clients) {
+            client.SendMessage(Message.Message_Type.ConnectedClients, connectedUsers);
+        }
     }
-}
 
     @Override
     public void run() {
@@ -74,7 +77,6 @@ public static void SendBroadcast() {
                 ServerClient nclient = new ServerClient(clientSocket); //Clienttan bir serverClient oluşturur,gelen mesajlar gönderilecek mesajlar bu obje üzerinden yapılır.
                 this.addClient(nclient); //arrayliste client eklenir.
                 nclient.Listen(); //ve client dinlemeye başlanır.
- 
 
             } catch (IOException ex) {// Socket oluştururken ortaya çıkabilecek hataları yakalar.
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -83,13 +85,4 @@ public static void SendBroadcast() {
 
     }
 
-//    public static void Send(ServerClient cl, Message msg) {//Serverın clienta mesaj göndermesini sağlar.
-//
-//        try {
-//            cl.output.writeObject(msg);
-//        } catch (IOException ex) {//output.writeObject(msg) metodundaki hataları yakalar.
-//            Logger.getLogger(ServerClient.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//    }
 }

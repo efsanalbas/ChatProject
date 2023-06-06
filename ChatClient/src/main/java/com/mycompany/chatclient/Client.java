@@ -1,27 +1,21 @@
 package com.mycompany.chatclient;
 
-import static com.mycompany.chatclient.ChatScreen.txt_roomName;
 import static com.mycompany.chatclient.ChatScreen.y;
 import game.Message;
-import static game.Message.Message_Type.Name;
 import static game.Message.Message_Type.ParticipantAdded;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 
 /**
  *
@@ -39,35 +33,32 @@ class Listen extends Thread {
 
                 Message received = (Message) (Client.input.readObject()); //Alınan mesaj input.readObject() ile okundu ve mesaj objesine atandı.
                 switch (received.type) { //Mesajın tipine göre aşağıdaki koşullar çalıştırılır.
-                    case ConnectedClients:
-                        ChatScreen.listModel.clear(); // Önceki kullanıcıları temizle
-                        for (int i = 0; i < received.userList.size(); i++) {
-                            ChatScreen.listModel.addElement(received.userList.get(i));
-                            ChatRoom.participantListModel.addElement(received.userList.get(i));
+                    case ConnectedClients: //Clientlar bağlandığında ChatScreende listeye eklenir.
+                        for (int i = 0; i < received.userList.size(); i++) {//Bağlanan kullanıcılar arrayList olarak Client'a gönderildi.
+                            if (!ChatScreen.listModel.contains(received.userList.get(i))) { //Eğer bu kullanıcı önceden eklendiyse her durumda yeniden eklenmemesi için bu durumu kontrol ettim.
+                                ChatScreen.listModel.addElement(received.userList.get(i)); //Listeye bağlanan clientları ekledim.
+                                ChatRoom.participantListModel.addElement(received.userList.get(i));
+                                //Aynı zamanda chatRoom tarafında da bağlanan clientlar arasından 
+                                //odaya ekleme yapılabilmesi için participantListModel' de bağlı clientları gösterdim. 
+                            }
                         }
                         break;
-
-                    case CreateRoom:
-                        String roomInfo = received.content.toString();
-                        ClientRoom cr = new ClientRoom(roomInfo);
-                        Client.rooms.add(cr);
-                        Client.addRoomButton(cr);
+                    case CreateRoom: //Serverdan gelen istek doğrultusunda oda oluşturulur.
+                        String roomInfo = received.content.toString();//Katılımcı ve oda bilgileri serverdan alındı.
+                        ClientRoom cr = new ClientRoom(roomInfo); //Oda oluşturuldu. Burada clientRoom, server tarafındaki ServerRoom gibi katılımcı ve oda adını içerir.
+                        Client.rooms.add(cr);//Clientın odalarının bulunduğu listeye ClientRoom nesnesi eklendi.
+                        Client.addRoomButton(cr); //Client ekranına butonu eklememi sağlayan fonksiyon.
                         break;
-
-                    case ParticipantAdded:
-                        String roomInformation = received.content.toString();
+                    case ParticipantAdded: //Client odaya kullanıcı eklemek istediğinde,
+                        String roomInformation = received.content.toString(); //oda bilgisi ve eklenecek yeni client serverdan alınır.
                         String[] participantInfo = received.content.toString().split(" ");
                         if (Client.name.equals(participantInfo[1])) {
-                            ClientRoom addedClient = new ClientRoom(roomInformation);
-                            Client.rooms.add(addedClient);
-                            Client.addRoomButton(addedClient);
+                            ClientRoom addedClient = new ClientRoom(roomInformation); //Oda nesnesi oluşturuldu.
+                            Client.rooms.add(addedClient);//Clientın odalarına eklendi.
+                            Client.addRoomButton(addedClient); //Client ekranında yeni room gösterildi.
                             break;
                         }
-                    case File:
-                        String fileMessage = received.content.toString();
-                        Client.cr.txta_rcvd.append(fileMessage + "\n");
-                        break;
-                    case Text:
+                    case Text: //Text gelediğinde ekrana yazdırıldı.
                         Client.cr.txta_rcvd.append(received.content.toString() + "\n");
                         break;
                 }
@@ -117,32 +108,19 @@ public class Client {
 
     }
 
-    public static void SendFile(String roomName, File file) {
-        try {
-            byte[] fileBytes = Files.readAllBytes(file.toPath());
-            String fileName = file.getName();
-            FileInfo fileInfo = new FileInfo(roomName, fileName, fileBytes);
-            Message fileMessage = new Message(Message.Message_Type.File);
-            fileMessage.content = fileInfo;
-            Client.output.writeObject(fileMessage);
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public static void addRoomButton(ClientRoom room) {
-        JButton chatRoom = new JButton();
+    public static void addRoomButton(ClientRoom room) { //Oda butonunu clientın ekranına eklemek için bu fonksiyonu oluşturdum.
+        JButton chatRoom = new JButton(); //Butonu oluşturdu.
         chatRoom.setBackground(Color.pink);
-        ChatScreen.jPanel1.add(chatRoom);
+        ChatScreen.jPanel1.add(chatRoom); //panele ekledi.
         y += 50;
-        chatRoom.setBounds(400, y, 150, 40);
+        chatRoom.setBounds(400, y, 150, 40);//Ekrana ekledi.
         chatRoom.setText(room.roomName);
 
         chatRoom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                cr = new ChatRoom(room.roomName, room.participants);
+                cr = new ChatRoom(room.roomName, room.participants); //ChatRooma tıklandığında oda ekranı görüntülendi.
                 cr.setVisible(true);
             }
         });

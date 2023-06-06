@@ -11,10 +11,13 @@ public class FileInfo implements Serializable {
     public String roomName;
     public String fileName;
     public byte[] fileBytes;
+    public String filePath;
 
-    public FileInfo(String roomName, String fileName, byte[] fileBytes) {
+    public FileInfo(String roomName, String fileName, byte[] fileBytes,String filePath) {
         this.roomName = roomName;
         this.fileName = fileName;
         this.fileBytes = fileBytes;
+        this.filePath = filePath;
+
     }
 }

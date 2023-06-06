@@ -4,22 +4,26 @@
  */
 package game;
 
+import com.mycompany.chatclient.FileInfo;
 import java.util.ArrayList;
 
 /**
  *
  * @author nurefsanalbas
  */
-
 public class Message implements java.io.Serializable {
-    public static enum Message_Type {Name,ConnectedClients,ParticipantAdded,CreateRoom,AddParticipant,SendRooms,Text,File}
-    
+
+    public static enum Message_Type {
+        Name, ConnectedClients, ParticipantAdded, CreateRoom, AddParticipant, Text, File
+    }
+
     public Message_Type type;
     public Object content;
-    public ArrayList <String> userList= new ArrayList<>();
-    public Message(Message_Type t)
-    {
-        this.type=t;
-        }
- 
+
+    public ArrayList<String> userList = new ArrayList<>();
+
+    public Message(Message_Type t) {
+        this.type = t;
+    }
+
 }

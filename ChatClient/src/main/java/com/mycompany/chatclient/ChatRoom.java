@@ -19,10 +19,9 @@ import javax.swing.JTextArea;
  */
 public class ChatRoom extends javax.swing.JFrame {
 
-//    public static ArrayList<String> participates = new ArrayList<>();
-    public static String roomName;
-    public static ArrayList<String> participants;
-    public static DefaultListModel<String> participantListModel = new DefaultListModel<>();
+    public static String roomName;//Oda adı
+    public static ArrayList<String> participants;//Katılımcılar
+    public static DefaultListModel<String> participantListModel = new DefaultListModel<>(); //Serverdaki bağlantı listesi.
 
     /**
      * Creates new form ChatRoom
@@ -33,7 +32,7 @@ public class ChatRoom extends javax.swing.JFrame {
         this.participants = participants;
         initComponents();
         lst_participants.setModel(participantListModel);
-        initializeRoom();
+        initializeRoom();//Odadaki katılımcıları chat roomda gösterir.
 
     }
 
@@ -41,7 +40,7 @@ public class ChatRoom extends javax.swing.JFrame {
         lbl_chat.setText(roomName);
         String participant = "";
         for (int i = 0; i < participants.size(); i++) {
-            participant+=participants.get(i)+" && ";
+            participant += participants.get(i) + " && ";
         }
         lbl_participants.setText(participant);
     }
@@ -209,7 +208,7 @@ public class ChatRoom extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_sendMessageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendMessageActionPerformed
-
+        //Mesaj gönderimi burada gerçekleşir.
         Message textMessage = (Message) new Message(Message.Message_Type.Text);
         String mesaj = Client.name + ":" + txta_send.getText();
         textMessage.content = ChatRoom.roomName + "-123-" + mesaj;
@@ -220,17 +219,16 @@ public class ChatRoom extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_sendMessageActionPerformed
 
     private void btn_addParticipantActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addParticipantActionPerformed
-        // participantListModel.clear();
         String selectedClient = lst_participants.getSelectedValue(); // Seçilen katılımcıyı alır
-        if (selectedClient != null) {
-            Message addParticipant = (Message) new Message(Message.Message_Type.AddParticipant);
+        if (selectedClient != null) { 
+            Message addParticipant = (Message) new Message(Message.Message_Type.AddParticipant);//Katılımcıyı eklemesi için clienta mesaj gönderir.
             addParticipant.content = this.roomName + "-123-" + selectedClient;
             Client.Send(addParticipant);
         }
     }//GEN-LAST:event_btn_addParticipantActionPerformed
 
     private void btn_chooseFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_chooseFileActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser(); //Gönderilmek istenen dosyanın seçilmesi için filechooser oluşturulur.
         int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
@@ -239,20 +237,7 @@ public class ChatRoom extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_chooseFileActionPerformed
 
     private void btn_sendFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sendFileActionPerformed
-        String filePath = txt_file.getText();
-        if (!filePath.isEmpty()) {
-            File file = new File(filePath);
-            if (file.exists()) {
 
-                Client.SendFile(roomName, file);
-                txt_file.setText("");
-            } else {
-                System.out.println("Belirtilen dosya bulunamadı.");
-            }
-        } else {
-            System.out.println("Dosya seçilmedi.");
-        }
- 
     }//GEN-LAST:event_btn_sendFileActionPerformed
 
     /**

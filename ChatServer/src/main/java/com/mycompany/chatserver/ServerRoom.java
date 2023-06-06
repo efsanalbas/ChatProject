@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author nurefsanalbas
  */
-public class ServerRoom {
+public class ServerRoom { //Client chat odası oluşturmak istediğinde oda adı ve katılımcı bilgileriyle odayı oluşturur.
 
     public String roomName;
     public ArrayList<ServerClient> participants;

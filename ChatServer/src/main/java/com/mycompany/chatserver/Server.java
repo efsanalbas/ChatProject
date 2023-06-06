@@ -59,7 +59,7 @@ public class Server extends Thread {
 
     }
 
-    public static void SendBroadcast() {
+    public static void SendBroadcast() { //Bağlanan clientların listesi hepsine broadcast yapılır.
         ArrayList<String> connectedUsers = new ArrayList<>(clientList);
         for (ServerClient client : clients) {
             client.SendMessage(Message.Message_Type.ConnectedClients, connectedUsers);

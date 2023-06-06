@@ -14,7 +14,7 @@ public class ChatServer {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Server server = new Server(3001); //Serverı oluşturuyoruz ve 3000 nolu porttan dinlemeye başlıyor.
+        Server server = new Server(3001); //Serverı oluşturuyoruz ve 3001 nolu porttan dinlemeye başlıyor.
         server.Listen(); //server dinlemeye başlıyor.
     }
 

@@ -18,16 +18,16 @@ import javax.swing.JButton;
  */
 public class ChatScreen extends javax.swing.JFrame {
 
-    public static int y = 0;
-    public static String username;
-    public static DefaultListModel<String> listModel = new DefaultListModel<>();
+    public static int y = 0; //Odaları oluştururken offseti ayarlamak için kullandım.
+    public static String username; 
+    public static DefaultListModel<String> listModel = new DefaultListModel<>(); //Bağlanan clientların listelenmesi için oluşturdum.
 
     /**
      * Creates new form ChatScreen
      */
     public ChatScreen() {
         initComponents();
-        lst_ConnectedClients.setModel(listModel);
+        lst_ConnectedClients.setModel(listModel); 
 
     }
 
@@ -125,19 +125,18 @@ public class ChatScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_usernameActionPerformed
 
     private void btn_connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_connectActionPerformed
-        username = txt_username.getText();
-        Client.Start("localhost", 3001);
+        username = txt_username.getText(); //Kullanıcı adı alındı.
+        Client.Start("localhost", 3001); //Client dinlenmeye başlandı.
     }//GEN-LAST:event_btn_connectActionPerformed
 
     private void btn_privateChatRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_privateChatRoomActionPerformed
 
-        String selectedUser = lst_ConnectedClients.getSelectedValue();
-        String roomName = txt_roomName.getText();
-        String clientName = Client.name;
-        Message makeRoom = (Message) new Message(Message.Message_Type.CreateRoom);
-        makeRoom.content = roomName + " " + clientName + " " + selectedUser;
+        String selectedUser = lst_ConnectedClients.getSelectedValue(); //Client private room oluşturmak isterse, bağlanan clientlar arasından bir seçim yapar.
+        String roomName = txt_roomName.getText(); //Clientın oluşturmak istediği oda adı.
+        String clientName = Client.name; 
+        Message makeRoom = (Message) new Message(Message.Message_Type.CreateRoom); //Oda oluşturulması için servera istek atıldı.
+        makeRoom.content = roomName + " " + clientName + " " + selectedUser; //Odayı oluşturmak için odanın adı, client ve seçilen kişi gönderildi.
         Client.Send(makeRoom);
- 
 
     }//GEN-LAST:event_btn_privateChatRoomActionPerformed
 
